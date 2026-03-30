@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>栖居 · 民宿预订</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #f5f0e8;
+    --clay: #c8a882;
+    --bark: #5c3d2e;
+    --moss: #4a5240;
+    --cream: #faf7f2;
+    --smoke: #8a8278;
+    --warm-white: #fffef9;
+    --accent: #d4875a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--bark);
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    background: rgba(250,247,242,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(200,168,130,0.2);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 64px;
+  }
+  .nav-logo {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.4rem; font-weight: 600;
+    color: var(--bark); letter-spacing: 0.05em;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    text-decoration: none; color: var(--smoke);
+    font-size: 0.9rem; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--bark); }
+  .btn-login {
+    background: var(--bark); color: var(--cream) !important;
+    padding: 8px 20px; border-radius: 100px;
+    font-size: 0.85rem !important;
+    transition: background 0.2s !important;
+  }
+  .btn-login:hover { background: var(--accent) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    margin-top: 64px;
+    height: 520px;
+    background: linear-gradient(135deg, #3d2b1f 0%, #5c3d2e 40%, #7a5540 70%, #c8a882 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-content { text-align: center; position: relative; z-index: 1; }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(212,135,90,0.3);
+    color: #f5d5b8; border: 1px solid rgba(212,135,90,0.4);
+    padding: 4px 16px; border-radius: 100px;
+    font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 3.2rem; font-weight: 300;
+    color: var(--warm-white);
+    line-height: 1.3; margin-bottom: 16px;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.6);
+    font-size: 1rem; font-weight: 300;
+    margin-bottom: 36px;
+  }
+  .hero-btns { display: flex; gap: 12px; justify-content: center; }
+  .btn-primary {
+    background: var(--accent); color: white;
+    padding: 14px 32px; border-radius: 100px;
+    font-size: 0.9rem; font-weight: 500;
+    border: none; cursor: pointer;
+    transition: all 0.25s; text-decoration: none;
+  }
+  .btn-primary:hover { background: #c0744a; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: rgba(255,255,255,0.8);
+    padding: 14px 32px; border-radius: 100px;
+    font-size: 0.9rem; font-weight: 400;
+    border: 1px solid rgba(255,255,255,0.3); cursor: pointer;
+    transition: all 0.25s; text-decoration: none;
+  }
+  .btn-outline:hover { background: rgba(255,255,255,0.08); }
+
+  /* ── SECTIONS ── */
+  section { padding: 80px 48px; }
+  .section-label {
+    font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500; margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 2rem; font-weight: 400;
+    color: var(--bark); margin-bottom: 40px;
+  }
+
+  /* ── ROOMS ── */
+  .rooms-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .room-card {
+    background: var(--warm-white);
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(200,168,130,0.2);
+    transition: all 0.3s; cursor: pointer;
+  }
+  .room-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(92,61,46,0.12); }
+  .room-img {
+    height: 200px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem;
+  }
+  .room-img.r1 { background: linear-gradient(135deg, #e8d5c0, #c8a882); }
+  .room-img.r2 { background: linear-gradient(135deg, #c5d0c0, #7a9070); }
+  .room-img.r3 { background: linear-gradient(135deg, #d0c5c0, #9a8078); }
+  .room-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: white; color: var(--bark);
+    padding: 4px 10px; border-radius: 100px;
+    font-size: 0.75rem; font-weight: 500;
+  }
+  .room-badge.low { background: #fde8d8; color: var(--accent); }
+  .room-body { padding: 20px; }
+  .room-name {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.1rem; font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .room-desc { font-size: 0.85rem; color: var(--smoke); margin-bottom: 14px; line-height: 1.6; }
+  .room-meta { display: flex; justify-content: space-between; align-items: center; }
+  .room-price { font-size: 1rem; font-weight: 500; color: var(--bark); }
+  .room-price span { font-size: 0.75rem; color: var(--smoke); font-weight: 400; }
+  .room-avail {
+    font-size: 0.78rem; padding: 4px 10px;
+    border-radius: 100px; font-weight: 500;
+  }
+  .avail-good { background: #e8f0e4; color: var(--moss); }
+  .avail-low { background: #fde8d8; color: var(--accent); }
+  .avail-full { background: #f0e4e4; color: #a04040; }
+
+  /* ── BOOKING ── */
+  #booking { background: var(--sand); }
+  .booking-wrap {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+  }
+
+  /* Calendar */
+  .calendar-box {
+    background: var(--warm-white);
+    border-radius: 20px; padding: 28px;
+    border: 1px solid rgba(200,168,130,0.2);
+  }
+  .cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cal-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1rem; font-weight: 600;
+  }
+  .cal-nav {
+    background: none; border: 1px solid rgba(200,168,130,0.3);
+    width: 32px; height: 32px; border-radius: 50%;
+    cursor: pointer; font-size: 1rem; color: var(--bark);
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+  }
+  .cal-nav:hover { background: var(--clay); color: white; border-color: var(--clay); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day-label {
+    text-align: center; font-size: 0.7rem;
+    color: var(--smoke); padding: 4px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .cal-day {
+    text-align: center; padding: 8px 4px;
+    font-size: 0.85rem; border-radius: 8px;
+    cursor: pointer; transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .cal-day:hover:not(.disabled):not(.empty) { background: var(--sand); border-color: var(--clay); }
+  .cal-day.selected { background: var(--bark); color: white; }
+  .cal-day.in-range { background: rgba(92,61,46,0.1); }
+  .cal-day.today { font-weight: 700; color: var(--accent); }
+  .cal-day.disabled { color: #ccc; cursor: not-allowed; }
+  .cal-day.empty { cursor: default; }
+
+  /* Booking panel */
+  .booking-panel { display: flex; flex-direction: column; gap: 20px; }
+  .bp-card {
+    background: var(--warm-white);
+    border-radius: 16px; padding: 22px;
+    border: 1px solid rgba(200,168,130,0.2);
+  }
+  .bp-label {
+    font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--smoke); margin-bottom: 12px; font-weight: 500;
+  }
+  .duration-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .dur-btn {
+    padding: 8px 16px; border-radius: 100px;
+    border: 1px solid rgba(200,168,130,0.4);
+    background: none; cursor: pointer; font-size: 0.85rem;
+    color: var(--bark); transition: all 0.2s;
+  }
+  .dur-btn:hover, .dur-btn.active {
+    background: var(--bark); color: white; border-color: var(--bark);
+  }
+  .room-select {
+    width: 100%; padding: 10px 14px;
+    border: 1px solid rgba(200,168,130,0.4);
+    border-radius: 10px; background: var(--sand);
+    font-size: 0.9rem; color: var(--bark);
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+  }
+  .avail-bar {
+    display: flex; align-items: center; gap: 10px; margin-top: 8px;
+  }
+  .avail-track {
+    flex: 1; height: 6px; background: #e8e0d4;
+    border-radius: 100px; overflow: hidden;
+  }
+  .avail-fill {
+    height: 100%; border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+  .avail-fill.good { background: #7a9070; }
+  .avail-fill.medium { background: var(--clay); }
+  .avail-fill.low { background: var(--accent); }
+  .avail-text { font-size: 0.8rem; color: var(--smoke); white-space: nowrap; }
+  .price-summary { display: flex; flex-direction: column; gap: 8px; }
+  .price-row { display: flex; justify-content: space-between; font-size: 0.9rem; }
+  .price-row.total {
+    font-weight: 600; font-size: 1rem;
+    padding-top: 10px; border-top: 1px solid rgba(200,168,130,0.3);
+    margin-top: 4px;
+  }
+  .btn-book {
+    width: 100%; padding: 14px; border-radius: 12px;
+    background: var(--accent); color: white;
+    border: none; cursor: pointer; font-size: 0.95rem; font-weight: 500;
+    transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-book:hover { background: #c0744a; transform: translateY(-1px); }
+
+  /* ── MODAL LOGIN ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(40,25,15,0.5); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--warm-white); border-radius: 24px;
+    padding: 40px; width: 380px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .modal-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.5rem; font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .modal-sub { font-size: 0.85rem; color: var(--smoke); margin-bottom: 28px; }
+  .modal-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 1px solid rgba(200,168,130,0.2); }
+  .tab-btn {
+    flex: 1; padding: 10px; border: none; background: none;
+    font-size: 0.85rem; color: var(--smoke); cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .tab-btn.active { color: var(--bark); border-color: var(--bark); font-weight: 500; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 0.8rem; color: var(--smoke); margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%; padding: 11px 14px;
+    border: 1px solid rgba(200,168,130,0.4); border-radius: 10px;
+    background: var(--sand); font-size: 0.9rem;
+    color: var(--bark); font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s; outline: none;
+  }
+  .form-input:focus { border-color: var(--clay); background: white; }
+  .btn-submit {
+    width: 100%; padding: 13px;
+    background: var(--bark); color: white;
+    border: none; border-radius: 12px; cursor: pointer;
+    font-size: 0.9rem; font-weight: 500;
+    margin-top: 8px; font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: var(--accent); }
+  .modal-close {
+    position: absolute; top: 16px; right: 20px;
+    background: none; border: none; font-size: 1.3rem;
+    cursor: pointer; color: var(--smoke);
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 32px; right: 32px;
+    background: var(--bark); color: white;
+    padding: 14px 22px; border-radius: 12px;
+    font-size: 0.88rem; z-index: 300;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s; pointer-events: none;
+    max-width: 300px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bark); color: rgba(255,255,255,0.6);
+    text-align: center; padding: 32px 48px;
+    font-size: 0.85rem;
+  }
+  footer strong { color: white; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    section { padding: 60px 20px; }
+    .rooms-grid { grid-template-columns: 1fr; }
+    .booking-wrap { grid-template-columns: 1fr; gap: 24px; }
+    .hero h1 { font-size: 2rem; }
+    .hero { height: 420px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">栖<span>居</span></div>
+  <div class="nav-links">
+    <a href="#rooms">房间</a>
+    <a href="#booking">预订</a>
+    <a href="#" onclick="showModal()">我的账号</a>
+    <a href="#" class="btn-login" onclick="showModal(); return false;" id="login-btn">登录 / 注册</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">精选民宿 · 短租长住</div>
+    <h1>找到你的<br>第二个家</h1>
+    <p>精心挑选的舒适居所，按周或按月灵活预订</p>
+    <div class="hero-btns">
+      <a href="#booking" class="btn-primary">立即预订</a>
+      <a href="#rooms" class="btn-outline">查看房间</a>
+    </div>
+  </div>
+</section>
+
+<!-- ROOMS -->
+<section id="rooms">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-label">精选房源</div>
+    <div class="section-title">我们的房间</div>
+    <div class="rooms-grid">
+
+      <div class="room-card" onclick="selectRoom('日式禅意套房')">
+        <div class="room-img r1">🏯
+          <span class="room-badge">按月/周</span>
+        </div>
+        <div class="room-body">
+          <div class="room-name">日式禅意套房</div>
+          <div class="room-desc">榻榻米地板，落地大窗，南向采光。约38㎡，独立卫浴，配备茶道区。</div>
+          <div class="room-meta">
+            <div class="room-price">¥2,800 <span>/ 周起</span></div>
+            <div class="room-avail avail-good" id="avail-0">剩余 <span id="cnt-0">7</span> 间</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="room-card" onclick="selectRoom('森林景观大床房')">
+        <div class="room-img r2">🌲
+          <span class="room-badge low">仅剩少量</span>
+        </div>
+        <div class="room-body">
+          <div class="room-name">森林景观大床房</div>
+          <div class="room-desc">朝林面山，清晨鸟鸣。约45㎡，双人大床，内置工作区，适合长住。</div>
+          <div class="room-meta">
+            <div class="room-price">¥3,500 <span>/ 周起</span></div>
+            <div class="room-avail avail-low" id="avail-1">剩余 <span id="cnt-1">3</span> 间</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="room-card" onclick="selectRoom('复古工业loft')">
+        <div class="room-img r3">🏙️
+          <span class="room-badge">按月/周</span>
+        </div>
+        <div class="room-body">
+          <div class="room-name">复古工业 Loft</div>
+          <div class="room-desc">挑高3.6m，裸砖墙面，复古皮质沙发。约52㎡，开放式厨房，城市视野。</div>
+          <div class="room-meta">
+            <div class="room-price">¥4,200 <span>/ 周起</span></div>
+            <div class="room-avail avail-good" id="avail-2">剩余 <span id="cnt-2">10</span> 间</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section id="booking">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="section-label">在线预订</div>
+    <div class="section-title">选择日期与房型</div>
+    <div class="booking-wrap">
+
+      <!-- Calendar -->
+      <div class="calendar-box">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+          <div class="cal-title" id="cal-title">2026年4月</div>
+          <button class="cal-nav" onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div style="margin-top:16px;font-size:0.78rem;color:var(--smoke);">
+          点击选择入住日期，系统自动计算离店
+        </div>
+      </div>
+
+      <!-- Booking Panel -->
+      <div class="booking-panel">
+
+        <div class="bp-card">
+          <div class="bp-label">预订时长</div>
+          <div class="duration-btns">
+            <button class="dur-btn active" onclick="setDuration(1,'周',this)">1 周</button>
+            <button class="dur-btn" onclick="setDuration(2,'周',this)">2 周</button>
+            <button class="dur-btn" onclick="setDuration(1,'月',this)">1 月</button>
+            <button class="dur-btn" onclick="setDuration(3,'月',this)">3 月</button>
+          </div>
+        </div>
+
+        <div class="bp-card">
+          <div class="bp-label">选择房型</div>
+          <select class="room-select" onchange="updateRoom(this.value)" id="room-select">
+            <option value="0">日式禅意套房 — ¥2,800/周</option>
+            <option value="1">森林景观大床房 — ¥3,500/周</option>
+            <option value="2">复古工业Loft — ¥4,200/周</option>
+          </select>
+          <div class="avail-bar" style="margin-top:16px;">
+            <div class="avail-track">
+              <div class="avail-fill good" id="avail-fill" style="width:70%"></div>
+            </div>
+            <div class="avail-text" id="avail-status">剩余 7 间（共 10 间）</div>
+          </div>
+        </div>
+
+        <div class="bp-card">
+          <div class="bp-label">费用明细</div>
+          <div class="price-summary">
+            <div class="price-row">
+              <span id="price-desc">¥2,800 × 1 周</span>
+              <span id="price-sub">¥2,800</span>
+            </div>
+            <div class="price-row">
+              <span>清洁费</span>
+              <span>¥200</span>
+            </div>
+            <div class="price-row">
+              <span>服务费</span>
+              <span id="price-fee">¥168</span>
+            </div>
+            <div class="price-row total">
+              <span>合计</span>
+              <span id="price-total">¥3,168</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-book" onclick="handleBook()">确认预订 →</button>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>栖居民宿</strong> · 精选短租长住居所<br>
+  <span style="font-size:0.78rem;margin-top:6px;display:block;">© 2026 栖居 · 保留所有权利</span>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="hideModal()">×</button>
+    <div class="modal-title">欢迎回来</div>
+    <div class="modal-sub">登录或注册以管理您的预订</div>
+    <div class="modal-tabs">
+      <button class="tab-btn active" onclick="switchTab('login',this)">登录</button>
+      <button class="tab-btn" onclick="switchTab('register',this)">注册</button>
+    </div>
+
+    <div id="tab-login">
+      <div class="form-group">
+        <label class="form-label">邮箱</label>
+        <input type="email" class="form-input" placeholder="your@email.com" id="login-email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密码</label>
+        <input type="password" class="form-input" placeholder="••••••••" id="login-pass">
+      </div>
+      <button class="btn-submit" onclick="doLogin()">登录</button>
+    </div>
+
+    <div id="tab-register" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">姓名</label>
+        <input type="text" class="form-input" placeholder="您的姓名">
+      </div>
+      <div class="form-group">
+        <label class="form-label">邮箱</label>
+        <input type="email" class="form-input" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密码</label>
+        <input type="password" class="form-input" placeholder="至少8位">
+      </div>
+      <button class="btn-submit" onclick="doRegister()">创建账号</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const rooms = [
+  { name: '日式禅意套房', price: 2800, total: 10, avail: 7 },
+  { name: '森林景观大床房', price: 3500, total: 10, avail: 3 },
+  { name: '复古工业Loft', price: 4200, total: 10, avail: 10 },
+];
+let state = {
+  year: 2026, month: 3,
+  selectedStart: null,
+  duration: { n: 1, unit: '周' },
+  roomIdx: 0,
+  loggedIn: false,
+  username: ''
+};
+
+const DAYS = ['日','一','二','三','四','五','六'];
+const MONTHS = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+
+function renderCalendar() {
+  const { year, month } = state;
+  document.getElementById('cal-title').textContent = `${year}年${MONTHS[month]}`;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = DAYS.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const isToday = date.toDateString() === today.toDateString();
+    const isSelected = state.selectedStart && date.toDateString() === new Date(...state.selectedStart).toDateString();
+    const isInRange = isInSelectedRange(date);
+    let cls = 'cal-day';
+    if (isPast) cls += ' disabled';
+    else if (isSelected) cls += ' selected';
+    else if (isInRange) cls += ' in-range';
+    else if (isToday) cls += ' today';
+    grid.innerHTML += `<div class="${cls}" onclick="selectDate(${year},${month},${d})">${d}</div>`;
+  }
+}
+
+function isInSelectedRange(date) {
+  if (!state.selectedStart) return false;
+  const start = new Date(...state.selectedStart);
+  const end = getEndDate(start);
+  return date > start && date < end;
+}
+
+function getEndDate(start) {
+  const end = new Date(start);
+  const { n, unit } = state.duration;
+  if (unit === '周') end.setDate(end.getDate() + n * 7);
+  else end.setMonth(end.getMonth() + n);
+  return end;
+}
+
+function selectDate(y, m, d) {
+  const date = new Date(y, m, d);
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (date < today) return;
+  state.selectedStart = [y, m, d];
+  renderCalendar();
+  updatePrice();
+  showToast(`已选择 ${y}年${m+1}月${d}日 入住`);
+}
+
+function changeMonth(dir) {
+  state.month += dir;
+  if (state.month < 0) { state.month = 11; state.year--; }
+  if (state.month > 11) { state.month = 0; state.year++; }
+  renderCalendar();
+}
+
+function setDuration(n, unit, btn) {
+  state.duration = { n, unit };
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updatePrice();
+  if (state.selectedStart) renderCalendar();
+}
+
+function updateRoom(idx) {
+  state.roomIdx = parseInt(idx);
+  updateAvailBar();
+  updatePrice();
+}
+
+function updateAvailBar() {
+  const r = rooms[state.roomIdx];
+  const pct = (r.avail / r.total) * 100;
+  const fill = document.getElementById('avail-fill');
+  fill.style.width = pct + '%';
+  fill.className = 'avail-fill ' + (pct > 60 ? 'good' : pct > 30 ? 'medium' : 'low');
+  document.getElementById('avail-status').textContent = `剩余 ${r.avail} 间（共 ${r.total} 间）`;
+}
+
+function selectRoom(name) {
+  const idx = rooms.findIndex(r => r.name === name);
+  if (idx >= 0) {
+    state.roomIdx = idx;
+    document.getElementById('room-select').value = idx;
+    updateAvailBar();
+    updatePrice();
+    document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    showToast(`已选择：${name}`);
+  }
+}
+
+function updatePrice() {
+  const r = rooms[state.roomIdx];
+  const { n, unit } = state.duration;
+  let sub = Math.round(r.price * (unit === '周' ? n : n * 4.3));
+  let fee = Math.round(sub * 0.06);
+  let total = sub + 200 + fee;
+  document.getElementById('price-desc').textContent = `¥${r.price.toLocaleString()} × ${n} ${unit}`;
+  document.getElementById('price-sub').textContent = `¥${sub.toLocaleString()}`;
+  document.getElementById('price-fee').textContent = `¥${fee.toLocaleString()}`;
+  document.getElementById('price-total').textContent = `¥${total.toLocaleString()}`;
+}
+
+function handleBook() {
+  if (!state.selectedStart) { showToast('⚠️ 请先在日历选择入住日期'); return; }
+  const r = rooms[state.roomIdx];
+  if (r.avail <= 0) { showToast('❌ 此房型已无可用房间'); return; }
+  if (!state.loggedIn) { showToast('请先登录再完成预订'); showModal(); return; }
+  r.avail = Math.max(0, r.avail - 1);
+  updateAvailBar();
+  updateRoomCards();
+  const [y,m,d] = state.selectedStart;
+  showToast(`✅ 预订成功！${r.name} · ${y}年${m+1}月${d}日入住`);
+}
+
+function updateRoomCards() {
+  rooms.forEach((r, i) => {
+    const el = document.getElementById(`cnt-${i}`);
+    const badge = document.getElementById(`avail-${i}`);
+    if (el) el.textContent = r.avail;
+    if (badge) {
+      if (r.avail === 0) { badge.className = 'room-avail avail-full'; badge.innerHTML = '已满房'; }
+      else if (r.avail <= 3) { badge.className = 'room-avail avail-low'; badge.innerHTML = `剩余 <span id="cnt-${i}">${r.avail}</span> 间`; }
+      else { badge.className = 'room-avail avail-good'; badge.innerHTML = `剩余 <span id="cnt-${i}">${r.avail}</span> 间`; }
+    }
+  });
+}
+
+function showModal() { document.getElementById('modal').classList.add('show'); }
+function hideModal() { document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) hideModal(); });
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-login').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('tab-register').style.display = tab === 'register' ? '' : 'none';
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) { showToast('请填写邮箱和密码'); return; }
+  state.loggedIn = true;
+  state.username = email.split('@')[0];
+  hideModal();
+  document.getElementById('login-btn').textContent = state.username;
+  showToast(`👋 欢迎回来，${state.username}！`);
+}
+
+function doRegister() {
+  state.loggedIn = true;
+  hideModal();
+  showToast('🎉 账号创建成功，欢迎加入栖居！');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+renderCalendar();
+updateAvailBar();
+updatePrice();
+</script>
+</body>
+</html>
